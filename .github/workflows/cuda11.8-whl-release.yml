@@ -1,9 +1,6 @@
 name: cuda11.8-whl-release
 
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
   schedule:
     - cron: '30 1 * * *'
