@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 import sys
@@ -5,7 +6,7 @@ import sys
 import requests
 
 
-def install_latest_lmdeploy():
+def install_latest_lmdeploy(sha=None):
     res = subprocess.run(['nvcc', '--version'],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
@@ -24,13 +25,16 @@ def install_latest_lmdeploy():
 
     python_ver = sys.version_info.major * 10 + sys.version_info.minor
 
-    lmdeploy_url = 'https://api.github.com/repos/InternLM/LMDeploy/commits'
-    resp = requests.get(lmdeploy_url)
-    if resp.status_code == 200:
-        lmdeploy_commit = resp.json()[0]["sha"][:7]
+    if sha:
+        lmdeploy_commit = sha
     else:
-        print('Fail to get LMDeploy latest commit')
-        exit(1)
+        lmdeploy_url = 'https://api.github.com/repos/InternLM/LMDeploy/commits'
+        resp = requests.get(lmdeploy_url)
+        if resp.status_code == 200:
+            lmdeploy_commit = resp.json()[0]["sha"][:7]
+        else:
+            print('Fail to get LMDeploy latest commit')
+            exit(1)
 
     release_url = 'https://api.github.com/repos/InternLM/lmdeploy/releases/latest'  # noqa E501
 
@@ -54,4 +58,7 @@ def install_latest_lmdeploy():
 
 
 if __name__ == "__main__":
-    install_latest_lmdeploy()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--sha', type=str)
+    args = parser.parse_args()
+    install_latest_lmdeploy(args.sha)
