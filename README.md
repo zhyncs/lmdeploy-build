@@ -6,3 +6,8 @@ The tag for the nightly build is commit id, so to install the corresponding whl 
 # This is usually the case when the environment dependencies are already in place.
 pip3 install 'lmdeploy-0.5.0+cu118+ab5b7ce-cp39-cp39-manylinux2014_x86_64.whl' --force-reinstall --no-deps
 ```
+
+```bash
+# one click install
+python3 -c "$(curl -fsSL https://raw.githubusercontent.com/zhyncs/lmdeploy-build/master/install.py)"
+```

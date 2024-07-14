@@ -23,7 +23,10 @@ def install_latest_lmdeploy(sha=None):
         print(f'Fail to support CUDA version=={cuda_major_ver}')
         exit(1)
 
-    python_ver = sys.version_info.major * 10 + sys.version_info.minor
+    if int(sys.version_info.minor) < 10:
+        python_ver = sys.version_info.major * 10 + sys.version_info.minor
+    else:
+        python_ver = sys.version_info.major * 100 + sys.version_info.minor
 
     if sha:
         lmdeploy_commit = sha
