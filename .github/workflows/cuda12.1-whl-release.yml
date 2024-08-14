@@ -64,7 +64,7 @@ jobs:
           python-version: ${{ matrix.pyver }}
       - name: Install python packages
         run: |
-          pip install pybind11 wheel
+          pip install pybind11<=2.13.1 wheel
       - uses: actions/checkout@v4
       - name: Setup CUDA Toolkit
         id: cuda-toolkit
