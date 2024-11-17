@@ -2,6 +2,13 @@ name: cuda12.1-whl-release
 
 on:
   workflow_dispatch:
+    inputs:
+      repo:
+        description: "repo"
+        default: "InternLM/lmdeploy"
+      branch:
+        description: "branch"
+        default: "main"
   schedule:
     - cron: '30 1 * * *'
 
@@ -33,8 +40,22 @@ jobs:
           haskell: true
           large-packages: true
           swap-storage: false
+      - name: Set default values
+        id: set_defaults
+        run: |
+          echo "[INFO] Event name is '${{ github.event_name }}'"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
+            echo "BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+            echo "REPO=internLM/lmdeploy" >> $GITHUB_ENV
+            echo "BRANCH=main" >> $GITHUB_ENV
+          else
+            echo "[ERROR] Unsupported event '${{ github.event_name }}'." >&2
+            exit 1
+          fi
       - name: Checkout repository
-        run: git clone --depth=1 https://github.com/InternLM/lmdeploy
+        run: git clone -b ${{ env.BRANCH }} --depth=1 https://github.com/${{ env.REPO }}
       - name: Build
         run: |
           echo ${PYTHON_VERSION}
@@ -72,9 +93,25 @@ jobs:
         run: ./setup_cuda.ps1
         env:
             INPUT_CUDA_VERSION: '12.1.0'
+
+      - name: Set default values
+        id: set_defaults
+        run: |
+          Write-Host "[INFO] Event name is '${{ github.event_name }}'"
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            echo "REPO=${{ inputs.repo }}" >> $env:GITHUB_ENV
+            echo "BRANCH=${{ inputs.branch }}" >> $env:GITHUB_ENV
+          } elseif ("${{ github.event_name }}" -eq "schedule") {
+            echo "REPO=InternLM/lmdeploy" >> $env:GITHUB_ENV
+            echo "BRANCH=main" >> $env:GITHUB_ENV
+          } else {
+            Write-Error "[ERROR] Unsupported event '${{ github.event_name }}'."
+            exit 1
+          }
+
       - name: Build wheel
         run: |
-          git clone --depth=1 https://github.com/InternLM/lmdeploy
+          git clone -b ${{ env.BRANCH }} --depth=1 https://github.com/${{ env.REPO }}
           pushd lmdeploy
           mkdir build
           cd build
@@ -103,8 +140,23 @@ jobs:
       - linux-build
       - windows-build
     steps:
+      - name: Set default values
+        id: set_defaults
+        run: |
+          echo "[INFO] Event name is '${{ github.event_name }}'"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
+            echo "BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+            echo "REPO=internLM/lmdeploy" >> $GITHUB_ENV
+            echo "BRANCH=main" >> $GITHUB_ENV
+          else
+            echo "[ERROR] Unsupported event '${{ github.event_name }}'." >&2
+            exit 1
+          fi
       - name: Checkout repository
-        run: git clone --depth=1 https://github.com/InternLM/lmdeploy
+        run:
+          git clone -b ${{ env.BRANCH }} --depth=1 https://github.com/${{ env.REPO }}
       - name: Download artifacts
         uses: actions/download-artifact@v3
       - name: Add cuda version to package name
