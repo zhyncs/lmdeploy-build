@@ -2,6 +2,13 @@ name: cuda11.8-whl-release
 
 on:
   workflow_dispatch:
+    inputs:
+      repo:
+        description: "repo"
+        default: "InternLM/lmdeploy"
+      branch:
+        description: "branch"
+        default: "main"
   schedule:
     - cron: '30 1 * * *'
 
@@ -34,7 +41,7 @@ jobs:
           large-packages: true
           swap-storage: false
       - name: Checkout repository
-        run: git clone --depth=1 https://github.com/InternLM/lmdeploy
+        run: git clone -b ${{ inputs.branch }} --depth=1 https://github.com/${{ inputs.repo }}
       - name: Build
         run: |
           echo ${PYTHON_VERSION}
