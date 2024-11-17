@@ -81,7 +81,7 @@ jobs:
             INPUT_CUDA_VERSION: '11.8.0'
       - name: Build wheel
         run: |
-          git clone --depth=1 https://github.com/InternLM/lmdeploy
+          git clone -b ${{ inputs.branch }} --depth=1 https://github.com/${{ inputs.repo }}
           pushd lmdeploy
           mkdir build
           cd build
@@ -111,7 +111,7 @@ jobs:
       - windows-build
     steps:
       - name: Checkout repository
-        run: git clone --depth=1 https://github.com/InternLM/lmdeploy
+        run: git clone -b ${{ inputs.branch }} --depth=1 https://github.com/${{ inputs.repo }}
       - name: Download artifacts
         uses: actions/download-artifact@v3
       - name: Add cuda version to package name
